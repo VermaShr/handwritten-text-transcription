@@ -3,6 +3,9 @@ Implementation of ML technique to transcribe handwritten text
 
 The code for the base model has been forked from https://github.com/danhan52/text_recognition repository.
 This model focuses on implementing Language modeling techniques, use of Attention layer and segmentation during pre processing stage of data.
+
+"Search for n-gram, or HTR language model to get towards the right papers"
+
 Below are the instructions to run the model.
 # Text Recognition for Zooniverse
 
