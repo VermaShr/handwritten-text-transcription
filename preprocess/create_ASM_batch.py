@@ -36,6 +36,7 @@ def create_ASM_batch(batch_end=1000, batch_size=1000, resize_to=0.5,
     full_sv = full_sv.replace("/online_functions", "")
     full_sv = full_sv.replace("/modeling", "")
     full_sv = full_sv.replace("/results", "")
+    full_sv = full_sv.replace("/preprocess","")
     full_sv = full_sv + "/data/ASM/Images/"
 
     print("Loading classification data", flush=True)
@@ -102,7 +103,6 @@ def create_ASM_batch(batch_end=1000, batch_size=1000, resize_to=0.5,
             ratio = maxw / float(img_line.size[0])
             hnew = int(float(img_line.size[1]) * float(ratio))
             img_line = img_line.resize((maxw, hnew), PIL.Image.ANTIALIAS)
-
         fn = "{0}{1}_{2}_{3}_{4}.png".format(full_sv, curclas["subject_id"], curclas["classification_id"],
                                              curclas["frame"], curclas["j"])
         # save image
@@ -146,6 +146,6 @@ if __name__ == "__main__":
                              resize_to=resize_to, rand_batch=rand_batch)
             redo = False
         except:
+            redo = False
             print("Error during batch creation, redoing", flush=True)
-            redo = True
             

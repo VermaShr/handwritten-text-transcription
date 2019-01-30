@@ -6,11 +6,11 @@ mkdir -p $outfolder
 cp $2* $outfolder
 
 # create asm batch
-cd ../preprocessing
+cd ../preprocess
 python create_ASM_batch.py 1000 1000 0.5 False
 cd ../modeling
 # predict new data
-python run_model.py pred ASM 1 16 True 1000 $outfolder new $outfolder 0
+python run_model.py pred ASM 1 16 True 1000 $outfolder new $outfolder 1
 # train new data
 python run_model.py train ASM 2 16 True 1000 $outfolder new $outfolder 1000
 
@@ -25,7 +25,7 @@ python run_model.py train ASM 2 16 True 1000 $outfolder old $outfolder 1000
 for i in {2000..200000..1000}
   do
     # create asm batch
-    cd ../preprocessing
+    cd ../preprocess
     python create_ASM_batch.py $i 1000 0.5 ../data False
     cd ../modeling
     # predict new data
