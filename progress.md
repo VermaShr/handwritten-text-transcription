@@ -9,3 +9,4 @@ Base Repo: [danhan52/text_recognition](https://github.com/danhan52/text_recognit
 "Search for n-gram, HTR language model, ICDAR, and ICFHR conference competitions to get towards the right papers"
 
 Links to some research paper:
+//To-Do

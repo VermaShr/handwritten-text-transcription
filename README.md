@@ -51,4 +51,4 @@ Before running anything in ~/results, you must copy the .csv files output by the
 
 Everything in the ~/results folder is not as automated as the rest of the code, so in order to use it, you'll need to look at the code (it's well commented) and modify as you see fit. The file training_validation_plots.R shows how to make plots from the data output by the modeling. The file online_experiment_results.ipynb shows how to get examples of the transcriptions alongside the images and error rates.
 
-> Please refer [this](https://github.com/VermaShr/handwritten-text-transcription/progress.md) to read through the ongoing work on this project
+> Please refer [this](https://github.com/VermaShr/handwritten-text-transcription/blob/master/progress.md) to read through the ongoing work on this project
