@@ -22,5 +22,6 @@ Links to some research paper:
 > - [About CTC-Medium](https://towardsdatascience.com/intuitively-understanding-connectionist-temporal-classification-3797e43a86c)
 > - [Paper on End to End transcription](https://arxiv.org/abs/1604.08352)
 > - [HTR for historical data](https://repositum.tuwien.ac.at/obvutwhs/download/pdf/2874742?originalFilename=true)
+> - [Multi Langugae Online HandWriting Recognition](https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=7478642)
 
 
