@@ -17,7 +17,7 @@ def readImg(url, grey=True):
     return img
 
 # create a batch with the next group of data from ASM
-def create_ASM_batch(batch_end=1000, batch_size=1000, resize_to=0.5, 
+def create_ASM_batch(batch_end=1000, batch_size=1000, resize_to=0.5,
                      rand_batch=False):
     # Read in all classifications
     sv_fold = "../data/ASM/"
@@ -76,7 +76,7 @@ def create_ASM_batch(batch_end=1000, batch_size=1000, resize_to=0.5,
         line_box = eval(curclas["line_box"])
         img_line = img.crop(line_box)
 
-        
+
         #img_line = img_line.resize([int(j) for j in np.floor(np.multiply(resize_to, img_line.size))])
         img_line_np = np.array(img_line)
 
@@ -128,6 +128,7 @@ def create_ASM_batch(batch_end=1000, batch_size=1000, resize_to=0.5,
 
 
 if __name__ == "__main__":
+    print("Here")
     batch_end=1000
     batch_size=1000
     resize_to=1.0
@@ -142,10 +143,9 @@ if __name__ == "__main__":
     redo = True
     while redo:
         try:
-            create_ASM_batch(batch_end=batch_end, batch_size=batch_size, 
+            create_ASM_batch(batch_end=batch_end, batch_size=batch_size,
                              resize_to=resize_to, rand_batch=rand_batch)
             redo = False
         except:
             redo = False
             print("Error during batch creation, redoing", flush=True)
-            

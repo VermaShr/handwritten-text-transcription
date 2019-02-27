@@ -6,7 +6,7 @@ import re
 from PIL import Image
 
 def preprocess_iam_lines(is_training=True, resize_to=0.5, print_letters=False):
-    
+
     # get directory to send all info to
     write_dir = "../data/"
     if is_training:
@@ -65,12 +65,15 @@ def preprocess_iam_lines(is_training=True, resize_to=0.5, print_letters=False):
     data_df["form"] = ["-".join([x.split("-")[0], x.split("-")[1]])
                                 for x in data_df["lineID"]]
     local_path = os.getcwd().replace("\\", "/")
+    print(local_path)
     local_path = local_path.replace("preprocess", "") + "/data/iamHandwriting/lines/"
+    print(local_path)
     data_df["path"] = local_path + data_df["prefix"] + "/" + data_df["form"] + "/" + data_df["lineID"] + ".png"
 
 
     #### Get image sizes and remove images above the 95th percentile - they're just too big
     w95 = np.percentile(data_df.w_bound, 95)
+    print(w95)
     h95 = np.percentile(data_df.h_bound, 95)
     print("Max image size (width, height): ({0}, {1})".format(w95, h95))
     with open(write_dir + "img_size.txt", "w") as f:

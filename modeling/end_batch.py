@@ -8,7 +8,7 @@ def remove_old_ckpt(b, output_model_dir):
         os.remove(mdl_base+".data-00000-of-00001")
     except:
         pass
-    
+
     try:
         os.remove(mdl_base+".index")
     except:
@@ -24,16 +24,17 @@ def remove_old_ckpt(b, output_model_dir):
         os.remove(output_model_dir + "metrics_image" + b + ".csv")
     except:
         pass
-    
-    return
 
+    return
 
 
 if __name__ == "__main__":
     if len(sys.argv) >= 4:
         b = str(int(sys.argv[1]) - int(sys.argv[3]))
+        #print('b is:', b)
         if b != 9:
             remove_old_ckpt(b=b, output_model_dir=sys.argv[2])
+
     print('Training Group {0} Finished!'.format(sys.argv[1]))
     print("********************************************************************************")
     print("********************************************************************************")
