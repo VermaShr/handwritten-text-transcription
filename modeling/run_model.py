@@ -23,8 +23,9 @@ def run_model(pred_train = "train",
               input_trg = "0"):
     is_training = pred_train == "train"
     csv_file = "../data/" + dataset + "/train.csv"
-    
+
     # load input_shape from file output by preprocess
+    print(n_epochs)
     with open("../data/img_size.txt", "r") as f:
         doc = f.readline()
         w, h = doc.split(",")
@@ -46,7 +47,7 @@ def run_model(pred_train = "train",
     out = deep_crnn(input_tensor, labels, input_shape, alphabet, batch_size,
                     is_training=True)
     train_op, loss_ctc, CER, accuracy, prob, words, pred_score = out
-    
+
     # want train_op = None for prediction to work
     if not is_training:
         train_op = None
@@ -59,7 +60,7 @@ def run_model(pred_train = "train",
 
     # ** Train model **
     saver = tf.train.Saver()
-    
+
     # try to load the old data or create new data frame and create restore model name
     if input_model_dir != "":
         try:
@@ -79,26 +80,27 @@ def run_model(pred_train = "train",
         restore_model_nm = ""
     print(restore_model_nm)
     print("Model prepped, now running " + pred_train)
+
     db, di = run_epochs(saver = saver,
-                        restore_model_nm = restore_model_nm,
-                        n_epochs_per_bunch = n_epochs,
-                        iterator = iterator,
-                        n_batches = n_batches,
-                        next_batch = next_batch,
-                        train_op = train_op,
-                        CER = CER,
-                        accuracy = accuracy,
-                        loss_ctc = loss_ctc,
-                        words = words,
-                        input_tensor = input_tensor,
-                        labels = labels,
-                        trg = trg,
-                        data_batch = data_batch,
-                        data_image = data_image,
-                        output_model_dir = output_model_dir,
-                        oldnew = oldnew,
-                        pred = pred_train,
-                        pred_score = pred_score)
+                    restore_model_nm = restore_model_nm,
+                    n_epochs_per_bunch = n_epochs,
+                    iterator = iterator,
+                    n_batches = n_batches,
+                    next_batch = next_batch,
+                    train_op = train_op,
+                    CER = CER,
+                    accuracy = accuracy,
+                    loss_ctc = loss_ctc,
+                    words = words,
+                    input_tensor = input_tensor,
+                    labels = labels,
+                    trg = trg,
+                    data_batch = data_batch,
+                    data_image = data_image,
+                    output_model_dir = output_model_dir,
+                    oldnew = oldnew,
+                    pred = pred_train,
+                    pred_score = pred_score)
 
     print("Optimization finished!")
     return db, di
@@ -114,7 +116,7 @@ if __name__ == "__main__":
     oldnew = "new"
     input_model_dir = ""
     input_trg = "0"
-    
+
     for i in range(len(sys.argv)):
         if i == 1:
             pred_train = sys.argv[i]
@@ -136,9 +138,9 @@ if __name__ == "__main__":
             input_model_dir = sys.argv[i]
         elif i == 10:
             input_trg = sys.argv[i]
-        
+
     run_model(pred_train = pred_train,
-              dataset = dataset, 
+              dataset = dataset,
               n_epochs = n_epochs,
               batch_size = batch_size,
               randomize = randomize,
@@ -147,4 +149,3 @@ if __name__ == "__main__":
               oldnew = oldnew,
               input_model_dir = input_model_dir,
               input_trg = input_trg)
-    

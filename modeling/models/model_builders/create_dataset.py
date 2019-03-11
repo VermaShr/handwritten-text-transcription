@@ -9,7 +9,8 @@ def create_iterator(csv_files_train, input_shape, batch_size, shuffle=True):
     datasize = len(label_list)
     filenames = tf.constant(filenames)
     label_list = tf.constant(label_list)
-        
+    print(label_list)
+
     def _parse_function(filename, label):
         image_string = tf.read_file(filename)
         image_decoded = tf.image.decode_png(image_string, channels=1)
@@ -17,7 +18,7 @@ def create_iterator(csv_files_train, input_shape, batch_size, shuffle=True):
                                                                input_shape[0],
                                                                input_shape[1])
         return image_resized, label, filename
-    
+
     dataset = tf.data.Dataset.from_tensor_slices((filenames, label_list))
     dataset = dataset.map(_parse_function)
     if shuffle:

@@ -17,7 +17,7 @@ def readImg(url, grey=True):
     return img
 
 # create a batch with the next group of data from ASM
-def create_ASM_batch(batch_end=1000, batch_size=1000, resize_to=0.5,
+def create_ASM_batch(batch_end=10, batch_size=10, resize_to=0.5,
                      rand_batch=False):
     # Read in all classifications
     sv_fold = "../data/ASM/"
@@ -63,6 +63,8 @@ def create_ASM_batch(batch_end=1000, batch_size=1000, resize_to=0.5,
     img_files = []
     count = 0
     onepercent = len(curdata)//100
+
+
     tenpercent = onepercent*10
 
     print("Creating image files and training csv", flush=True)
@@ -105,32 +107,35 @@ def create_ASM_batch(batch_end=1000, batch_size=1000, resize_to=0.5,
             img_line = img_line.resize((maxw, hnew), PIL.Image.ANTIALIAS)
         fn = "{0}{1}_{2}_{3}_{4}.png".format(full_sv, curclas["subject_id"], curclas["classification_id"],
                                              curclas["frame"], curclas["j"])
+
         # save image
+
         img_line.save(fn)
         img_files.append(fn)
         # add line for training
-        train_lines.append(trans)
 
+        train_lines.append(trans)
         count += 1
-        if count % onepercent == 0:
-            if count % tenpercent == 0:
-                perc = count//onepercent
-                print(str(perc)+"%", end="", flush=True)
-            else:
-                print(".", end="", flush=True)
+        # if count % onepercent == 0:
+        #     if count % tenpercent == 0:
+        #         perc = count//onepercent
+        #         print(str(perc)+"%", end="", flush=True)
+        #     else:
+        #         print(".", end="", flush=True)
 
     # end of loop
+    corpus = pd.DataFrame.from_dict({"transcription":train_lines})
     savedata = pd.DataFrame.from_dict({"new_img_path":img_files, "transcription":train_lines})
     savedata = savedata[np.logical_not(savedata.duplicated())]
     savedata.to_csv("../data/ASM/train.csv", sep="\t", index=False)
+    corpus.to_csv("../data/ASM/corpus.csv", sep="\t", index=False)
     print("\nTraining file and {0} images created".format(len(savedata)), flush=True)
     return
 
 
 if __name__ == "__main__":
-    print("Here")
-    batch_end=1000
-    batch_size=1000
+    batch_end=10
+    batch_size=10
     resize_to=1.0
     rand_batch=False
 

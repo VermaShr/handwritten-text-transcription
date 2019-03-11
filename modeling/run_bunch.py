@@ -35,7 +35,7 @@ def run_epochs(saver,
         # restore model if it exists
         if restore_model_nm != "":
             saver.restore(sess, restore_model_nm)
-        
+
         start_time = time.time() # time everything
         for i in range(n_epochs_per_bunch):
             sess.run(iterator.initializer) # need to initialize iterator for each epoch
@@ -107,4 +107,3 @@ def run_epochs(saver,
                 #if not err: break
             print('Avg Epoch time: {0} seconds'.format((time.time() - start_time)/(1.0*(i+1))))
     return data_batch, data_image
-
