@@ -11,9 +11,17 @@ from preprocess_iam import *
 def preprocess_combined(is_training=True, resize_to=0.5, print_letters=False):
     # run preprocessing scripts to get ensure data is in place
     print("\nRunning preprocessing on iam lines training")
-    preprocess_iam_lines(resize_to=resize_to, is_training=is_training, print_letters=print_letters)
+    data_df_iam = preprocess_iam_lines(resize_to=resize_to, is_training=is_training, print_letters=print_letters)
+    label_list = data_df_iam["transcription"].tolist()
+    with open('corpus.txt', 'a+') as f:
+        for item in label_list:
+            f.write("%s\n" % item)
     print("\nRunning preprocessing on Bentham training")
-    preprocess_bentham(resize_to=resize_to, is_training=is_training, print_letters=print_letters)
+    data_df_bentham = preprocess_bentham(resize_to=resize_to, is_training=is_training, print_letters=print_letters)
+    label_list = data_df_bentham["transcription"].tolist()
+    with open('corpus.txt', 'a+') as f:
+        for item in label_list:
+            f.write("%s\n" % item)
 
     if is_training:
         if not os.path.isdir("../data/combined_train/"):

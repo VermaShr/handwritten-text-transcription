@@ -139,7 +139,7 @@ def preprocess_iam_lines(is_training=True, resize_to=0.5, print_letters=False):
         print("Letter freqencies:\n", letters)
     else:
         print("Number of letters:", len(letters))
-    return
+    return data_df
 
 
 if __name__ == "__main__":
