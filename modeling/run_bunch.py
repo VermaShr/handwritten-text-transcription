@@ -3,6 +3,7 @@ import pandas as pd
 import tensorflow as tf
 import pickle
 import time
+import editdistance
 
 
 #############################################################################################################
@@ -14,10 +15,7 @@ def run_epochs(saver,
                n_batches,
                next_batch,
                train_op,
-               CER,
-               accuracy,
                loss_ctc,
-               words,
                input_tensor,
                labels,
                trg,
@@ -26,7 +24,8 @@ def run_epochs(saver,
                output_model_dir,
                oldnew,
                pred,
-               pred_score):
+               sparse_code_pred,
+               alphabet):
     with tf.Session() as sess:
         # initialize variables
         sess.run(tf.global_variables_initializer())
@@ -44,15 +43,22 @@ def run_epochs(saver,
             for j in range(0, n_batches):
                 err = False
                 input_tensor_b, labels_b, filenames_b = sess.run(next_batch)
-
-                try:
-                    if train_op is not None: # do training
-                        _, cer, acc, loss, wordz, pred_s = sess.run([train_op, CER, accuracy, loss_ctc, words, pred_score],
-                                                            feed_dict={input_tensor: input_tensor_b, labels: labels_b})
-                    else: # do prediction
-                        cer, acc, loss, wordz, pred_s = sess.run([CER, accuracy, loss_ctc, words, pred_score],
+                ground_truth = []
+                for i in range(labels_b.shape[0]):
+                    ground_truth.append(labels_b[i].decode("utf-8"))
+                if train_op is not None:# do training
+                    _, decoder, loss = sess.run([train_op, sparse_code_pred, loss_ctc],
                                                         feed_dict={input_tensor: input_tensor_b, labels: labels_b})
-                    # create output for new row in data frames
+
+                else:# do prediction
+                    decoder, loss = sess.run([sparse_code_pred, loss_ctc],
+                                                    feed_dict={input_tensor: input_tensor_b, labels: labels_b})
+                words = decoderOutputToText(decoder, ground_truth.shape[0], alphabet)
+                #Calculate CER and wordAccuracy
+                out = getCERandAccuracy(words, ground_truth)
+                cer, acc = out
+                try:
+                    #create output for new row in data frames
                     new_bat = {"tr_group":trg,
                                "oldnew":oldnew,
                                "pred":pred,
@@ -68,13 +74,12 @@ def run_epochs(saver,
                                "epoch":[i for _ in range(len(labels_b))],
                                "batch":[j for _ in range(len(labels_b))],
                                "labels":[str(ddd, "utf-8") for ddd in labels_b],
-                               "words":[str(ddd, "utf-8") for ddd in wordz],
-                               "pred_score":pred_s,
+                               "words":[str(ddd, "utf-8") for ddd in words],
                                "filenames":[str(ddd, "utf-8") for ddd in filenames_b]}
                     tim = (time.time()-start_time)/(i*n_batches + j + 1)
                     print('batch: {0}:{1}:{2}, time per batch: {5}\n\tloss: {3}, CER: {4}'.format(trg, i, j, loss, cer, tim), flush=True)
                 except: # deal with CTC loss errors that occur semi-regularly
-                    # create dummy output for new row in data frames
+                    #create dummy output for new row in data frames
                     new_bat = {"tr_group":trg,
                                "oldnew":oldnew,
                                "pred":pred,
@@ -91,11 +96,10 @@ def run_epochs(saver,
                                "batch":[j for _ in range(len(labels_b))],
                                "labels":[str(ddd, "utf-8") for ddd in labels_b],
                                "words":["" for _ in range(len(labels_b))],
-                               "pred_score":[-1 for _ in range(len(labels_b))],
                                "filenames":[str(ddd, "utf-8") for ddd in filenames_b]}
                     print("Error at {0}:{1}:{2}".format(trg, i, j), flush=True)
                     err = True
-                # save data
+                #save data
                 new_bat = pd.DataFrame.from_dict(new_bat)
                 new_img = pd.DataFrame.from_dict(new_img)
                 data_batch = data_batch.append(new_bat)
@@ -107,3 +111,29 @@ def run_epochs(saver,
                 #if not err: break
             print('Avg Epoch time: {0} seconds'.format((time.time() - start_time)/(1.0*(i+1))))
     return data_batch, data_image
+
+def decoderOutputToText(ctcOutput, batchSize, alphabet):
+    encodedLabelStrs = [[] for i in range(batchSize)]
+    blank = len(alphabet)
+    for b in range(batchSize):
+        for label in ctcOutput[b]:
+            if label==blank:
+                break
+            encodedLabelStrs[b].append(label)
+    return [str().join([alphabet[c] for c in labelStr]) for labelStr in encodedLabelStrs]
+
+def getCERandAccuracy(words, ground_truth):
+    numCharErr = 0
+    numCharTotal = 0
+    numWordOK = 0
+    numWordTotal = 0
+    print('Ground truth -> Recognized')
+    for i in range(len(words)):
+        numWordOK += 1 if ground_truth[i] == words[i] else 0
+        numWordTotal += 1
+        dist = editdistance.eval(words[i], ground_truth[i])
+        numCharErr += dist
+        numCharTotal += len(ground_truth[i])
+    CER = numCharErr / numCharTotal
+    wordAccuracy = numWordOK / numWordTotal
+    return CER, wordAccuracy

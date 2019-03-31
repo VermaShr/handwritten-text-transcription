@@ -46,7 +46,7 @@ def run_model(pred_train = "train",
 
     out = deep_crnn(input_tensor, labels, input_shape, alphabet, batch_size,
                     is_training=True)
-    train_op, loss_ctc, CER, accuracy, prob, words, pred_score = out
+    train_op, sparse_code_pred, loss_ctc, prob = out
 
     # want train_op = None for prediction to work
     if not is_training:
@@ -70,13 +70,13 @@ def run_model(pred_train = "train",
             data_batch = pd.DataFrame(columns=["tr_group", "oldnew", "pred", "epoch", "batch", # location information
                                                "loss", "cer", "accuracy", "time"])
             data_image = pd.DataFrame(columns=["tr_group", "oldnew", "pred", "epoch", "batch", # location information
-                                               "labels", "words", "pred_score", "filenames"])
+                                               "labels", "words", "filenames"])
         restore_model_nm = input_model_dir + "model" + input_trg + ".ckpt"
     else:
         data_batch = pd.DataFrame(columns=["tr_group", "oldnew", "pred", "epoch", "batch", # location information
                                            "loss", "cer", "accuracy", "time"])
         data_image = pd.DataFrame(columns=["tr_group", "oldnew", "pred", "epoch", "batch", # location information
-                                           "labels", "words", "pred_score", "filenames"])
+                                           "labels", "words", "filenames"])
         restore_model_nm = ""
     print(restore_model_nm)
     print("Model prepped, now running " + pred_train)
@@ -88,10 +88,7 @@ def run_model(pred_train = "train",
                     n_batches = n_batches,
                     next_batch = next_batch,
                     train_op = train_op,
-                    CER = CER,
-                    accuracy = accuracy,
                     loss_ctc = loss_ctc,
-                    words = words,
                     input_tensor = input_tensor,
                     labels = labels,
                     trg = trg,
@@ -100,7 +97,8 @@ def run_model(pred_train = "train",
                     output_model_dir = output_model_dir,
                     oldnew = oldnew,
                     pred = pred_train,
-                    pred_score = pred_score)
+                    sparse_code_pred=sparse_code_pred,
+                    alphabet=alphabet)
 
     print("Optimization finished!")
     return db, di

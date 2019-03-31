@@ -14,8 +14,7 @@ def bidirectional_lstm(input_tensor, list_n_hidden=[256, 256],
         lstm_net, _, _ = tf.contrib.rnn.stack_bidirectional_dynamic_rnn(fw_cell_list,
                                                                         bw_cell_list,
                                                                         input_tensor, # THE INPUT
-                                                                        dtype=tf.float32
-                                                                        )
+                                                                        dtype=tf.float32)
 
         # Dropout layer
         lstm_net = tf.nn.dropout(lstm_net, keep_prob=keep_prob_dropout)

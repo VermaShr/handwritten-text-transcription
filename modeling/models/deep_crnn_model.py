@@ -33,12 +33,12 @@ def get_predictions(lstm_net, n_classes, list_n_hidden):
 
     # Swap batch and time axis
     prob = tf.transpose(lstm_out, [1, 0, 2], name='transpose_time_major')  # [width(time), batch, n_classes]
-    
+
     return prob #predictions_dict
 
 #######################################################################
 
-def deep_crnn(input_tensor, labels, input_shape, alphabet, batch_size, 
+def deep_crnn(input_tensor, labels, input_shape, alphabet, batch_size,
     optimizer="adam", is_training=True, lastlayer=False):
 
     alphabet_codes = list(range(len(alphabet)))
@@ -48,19 +48,15 @@ def deep_crnn(input_tensor, labels, input_shape, alphabet, batch_size,
     cnn_out = deep_cnn(input_tensor, is_training)
     cnn_out = reshape_cnn(cnn_out)
     n_hidden = [256, 256]
-    #if is_training:
     lstm_out = bidirectional_lstm(cnn_out, n_hidden)
-    #else:
-    #    lstm_out = bidirectional_lstm(cnn_out, n_hidden, 1.0)
-    prob = get_predictions(lstm_out, n_classes, n_hidden)
+    prob = get_predictions(lstm_out, n_classes+1, n_hidden) #made changes here
 
     # loss layers
-    out = ctc_loss(prob, labels, input_shape, alphabet, 
+    out = ctc_loss(prob, labels, input_shape, alphabet,
         alphabet_codes, batch_size)
-    loss_ctc, words, pred_score, CER, accuracy = out
-    words = tf.convert_to_tensor(words)
-    
+    loss_ctc, sparse_code_pred = out
+
     # optimizer
     train_op = create_optimizer(loss_ctc, lastlayer)
 
-    return train_op, loss_ctc, CER, accuracy, prob, words, pred_score
+    return train_op, sparse_code_pred, loss_ctc, prob
